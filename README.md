@@ -64,7 +64,7 @@ __src/top_ELK130E.asm__
 * Mincebert's Acorn ADFS 1.30E build for the Electron
 * based on the above ELK100 build with the following changes:
 * the version string is Acorn ADFS 1.30E
-* patches *COMPACT to hide the cursor when run and re-enable it afterwards to avoid disk corruption
+* patches \*COMPACT to hide the cursor when run and re-enable it afterwards to avoid disk corruption
 * md5sum = 2441643d5121f8441298acf444bfe69f (will change)
 * currently 7 bytes free
 
@@ -86,6 +86,24 @@ __src/top_MAST130.asm__
 * md5sum = a9014b75fc0e1efbbe89acb20c4a75b8
 * 0 bytes free
 
+## Additional controllers
+
+This distribution supports the following third-party floppy drive
+controllers, all on the Model B:
+
+| Filename | Controller        | Tested on    | Included in adfs.ssd |
+|----------|-------------------|--------------|----------------------|
+| O2791A   | Opus 2791         | hardware     | no                   |
+| O2793A   | Opus 2793         | &ndash;      | no                   |
+| O1770A   | Opus 1770         | b2, BeebEm   | yes                  |
+| CHALLA   | Opus Challenger 3 | hardware, b2 | yes                  |
+| W1770A   | Watford 1770      | BeebEm       | yes                  |
+| S1770A   | Solidisk 1770     | &ndash;      | yes                  |
+
+All ROMs are titled Acorn ADFS 1.39.  
+Use ADFS 1.30 with later issues of the Watford and Solidisk controllers,
+which are compatible with the standard Acorn interface.  
+
 ## Full build log
 ```
 Blank build/adfs.ssd created
@@ -96,6 +114,9 @@ Building ADFS130...
 Building ADFS133...
     code ends at &BF69  ( 151 bytes free )
     mdsum is 5a2d9bdd3f9e22171d7fe430bc34137a -
+Building CHALLA...
+    code ends at &BF4C  ( 180 bytes free )
+    mdsum is aa9a01cdc0d4b85c810d435e3d8bb99a -
 Building DC133...
     code ends at &C000  ( 0 bytes free )
     mdsum is c7714bd93602fdc11d2cdaab4af03b07 -
@@ -114,17 +135,30 @@ Building JGH133...
 Building MAST130...
     code ends at &C000  ( 0 bytes free )
     mdsum is a9014b75fc0e1efbbe89acb20c4a75b8 -
+Building O1770A...
+    code ends at &BF47  ( 185 bytes free )
+    mdsum is 31b35815c1cbf33eb9eca37ad3aa010e -
+Building S1770A...
+    code ends at &BF47  ( 185 bytes free )
+    mdsum is d88cbb73d5ff7571a16c6fe4c4f18f9c -
+Building W1770A...
+    code ends at &BF4C  ( 180 bytes free )
+    mdsum is fc5cfea43a68b00d8e14531539e5226c -
 
 Disk title:  (1)  Disk size: &320 - 200K
-Boot Option: 0 (None)   File count: 8
+Boot Option: 0 (None)   File count: 12
 
 Filename:  Lck Lo.add Ex.add Length Sct
-$.MAST130      008000 008000 004000 1C2
-$.JGH133       008000 008000 004000 182
-$.ELK130E      008000 008000 004000 142
-$.ELK103       008000 008000 004000 102
-$.ELK100       008000 008000 004000 0C2
-$.DC133        008000 008000 004000 082
+$.W1770A       008000 008000 004000 2C2
+$.S1770A       008000 008000 004000 282
+$.O1770A       008000 008000 004000 242
+$.MAST130      008000 008000 004000 202
+$.JGH133       008000 008000 004000 1C2
+$.ELK130E      008000 008000 004000 182
+$.ELK103       008000 008000 004000 142
+$.ELK100       008000 008000 004000 102
+$.DC133        008000 008000 004000 0C2
+$.CHALLA       008000 008000 004000 082
 $.ADFS133      008000 008000 004000 042
 $.ADFS130      008000 008000 004000 002
 ```
