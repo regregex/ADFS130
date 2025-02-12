@@ -1,0 +1,52 @@
+; Define platforms
+PLAT_ELK                 = 1       ; Acorn Electron (separate FDC driver source file)
+PLAT_BBC                 = 2       ; i8271 (rejected) or Acorn B/B+ WD 1770 controller
+PLAT_MASTER              = 3       ; Master WD 1770 controller
+PLAT_O2791               = 4       ; Opus WD 2791 controller
+PLAT_O2793               = 5       ; Opus WD 2793 controller
+PLAT_O1770               = 6       ; Opus WD 1770 controller
+PLAT_CHALL               = 7       ; Opus Challenger 3-in-1 unit
+PLAT_W1770               = 8       ; Watford WD 1770 controller
+PLAT_S1770               = 9       ; Solidisk WD 1770 controller
+PLATFORM                 = PLAT_O2791
+
+; Optional ADFS patches
+PATCH_IDE                = TRUE    ; replace SCSI drivers with IDE
+PATCH_IDE_JGH            = TRUE    ; track JGH's latest IDE patch
+PATCH_IDE_RESULTCODES    = TRUE    ; correct the result codes returned by IDE driver
+PATCH_FULL_ACCESS        = TRUE    ; allow the E access bit to be removed
+PATCH_INFO               = TRUE    ; show full info on directories
+PATCH_UNSUPPORTED_OSFILE = TRUE    ; fix corrupted A register in unsupported OSFILE
+PATCH_PRESERVE_CONTEXT   = TRUE    ; preseve context (e.g. directory) over hard-break
+PATCH_TUBE_DELAY         = TRUE    ; add additional delay to tube accesses for 6MHz 32016
+PATCH_DATACENTRE         = TRUE    ; forward on to DataCentre OSWORD &76
+PATCH_COMPACT_CURSOR     = FALSE   ; patch *COMPACT to use screen RAM + turn off cursor
+
+; IO specific addresses
+SCSI_IDE_BASE            = $FC40
+TUBE_BASE                = $FEE0
+VIA_BASE                 = $FE40
+
+; Whether to preserve padding, for binary comparison with known versions
+PRESERVE_PADDING         = FALSE
+
+; Version macros
+MACRO INSERT_NAME_STR
+        EQUS    "Acorn ADFS"
+ENDMACRO
+MACRO INSERT_COPYRIGHT_STR
+        EQUS    "(C)2025 Acorn"
+ENDMACRO
+MACRO INSERT_VERSION_STR
+        EQUS    "1.39"
+ENDMACRO
+MACRO INSERT_VERSION_BIN
+        EQUS    $39
+ENDMACRO
+MACRO INSERT_HELP_STR
+        EQUS    "Advanced DFS "
+        INSERT_VERSION_STR
+ENDMACRO
+
+; Include common source file
+include "ADFS130.asm"
