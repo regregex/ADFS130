@@ -50,6 +50,18 @@ latchd      =       $40                 ;latch XOR mask to select double density
 latchr      =       $00                 ;latch value to reset FDC
 fdc         =       sheila+$0080        ;base of floppy drive controller registers
 latch       =       sheila+$0084        ;floppy drive interface control latch
+ELIF PLATFORM = PLAT_U2793
+sense       =       $00                 ;sense of FDC data bus pins (WD 2791 = $FF, else $00)
+stsens      =       $00                 ;sense of FDC status register compared to WD 2793
+hdload      =       $00                 ;sense of Type I command bit 3; $00=spin up $08=load head
+latch0      =       $1A                 ;latch value to select drive 0, single density
+latch1      =       $01                 ;latch XOR mask to select drive 1 (unit 1 side 0)
+latch2      =       $02                 ;latch XOR mask to select drive 2 (unit 0 side 1)
+latch6      =       $00                 ;latch XOR mask to select drive 6 (unit 2 side 0)
+latchd      =       $04                 ;latch XOR mask to select double density
+latchr      =       $00                 ;latch value to reset FDC
+fdc         =       sheila+$0084        ;base of floppy drive controller registers
+latch       =       sheila+$0080        ;floppy drive interface control latch
 ELIF PLATFORM = PLAT_O1770
 sense       =       $00                 ;sense of FDC data bus pins (WD 2791 = $FF, else $00)
 stsens      =       $80                 ;sense of FDC status register compared to WD 2793
@@ -86,7 +98,7 @@ latchd      =       $01                 ;latch XOR mask to select double density
 latchr      =       $00                 ;latch value to reset FDC
 fdc         =       sheila+$0084        ;base of floppy drive controller registers
 latch       =       sheila+$0080        ;floppy drive interface control latch
-ELSE          ; PLAT_S1770
+ELSE           ;PLAT_S1770
 sense       =       $00                 ;sense of FDC data bus pins (WD 2791 = $FF, else $00)
 stsens      =       $80                 ;sense of FDC status register compared to WD 2793
 hdload      =       $00                 ;sense of Type I command bit 3; $00=spin up $08=load head
@@ -210,16 +222,12 @@ ENDIF
 .LBA57
 IF PLATFORM = PLAT_BBC OR PLATFORM = PLAT_MASTER
         LDA     L1003,X
-ELSE
-        LDA     L1003,Y
-ENDIF
         PHA
         AND     #$1F
         BEQ     LBA63
 
 .LBA5F
         PLA
-IF PLATFORM = PLAT_BBC OR PLATFORM = PLAT_MASTER
         JMP     LBF66
 
 .LBA63
@@ -231,24 +239,25 @@ IF PLATFORM = PLAT_BBC OR PLATFORM = PLAT_MASTER
         PLA
         AND     #$20
         BNE     LBA72
-ELSE
-.baddrv
-        JMP     LBF66
-
-.LBA63
-        PLA
-        ASL     A
-        BMI     baddrv
-        ASL     A
-        BMI     LBA72
-
-ENDIF
 
         LDA     #latch0 EOR latchd
-IF latch0 EOR latchd
         BNE     LBA74
+
 ELSE
-        BEQ     LBA74
+        LDA     L1003,Y
+        ASL     A
+        BMI     LBA5F           ;if b6=1 then bad drive
+        ASL     A
+        ASL     A
+        BEQ     LBA63           ;if b4..b0 = $00 then LBA valid
+
+.LBA5F
+        JMP     LBF66           ;else bad drive
+
+.LBA63
+        LDA     #latch0 EOR latchd
+        BCC     LBA74           ;if b5=0 then select drive 0
+
 ENDIF
 
 .LBA72
@@ -282,7 +291,7 @@ ENDIF
         JSR     LBD22           ;select side 2 of drive
 
 .LBA9B
-IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793
+IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793 OR PLATFORM = PLAT_U2793
         JSR     reslat
 ELSE
         LDA     L0D5E
@@ -346,7 +355,7 @@ ELSE
 ;Opus 2791/2793 boards need a Drive Ready signal to accept Type II/III
 ;commands.  Always do a seek to wake up the drive.
 ;NB The extra ID read hits performance on other boards, but as we wait
-;for Drive Ready on them all now, we're stuck with it.
+;for Drive Ready on all of them now, we're stuck with it.
 ENDIF
 
         ROR     L10E4
@@ -906,8 +915,8 @@ ENDIF
         STA     fdccmd
         JSR     delay
 
-IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793
-;On Opus 2791/2793, seek the current track to unload the head.
+IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793 OR PLATFORM = PLAT_U2793
+;On WD 279x, seek the current track to unload the head.
 ;NB On the other third-party controllers, aborting a command
 ;on an empty drive leaves both drives running indefinitely.
         LDA     L00A3
@@ -1015,7 +1024,7 @@ ELSE
         LDA     #$A0            ;$A0 = write sector
         BCC     LBD10           ;if track number >= 20
 
-IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793
+IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793 OR PLATFORM = PLAT_U2793
 ;On WD 279X bit 1 is the Side Compare flag, do not set
 ELSE
         ORA     L0D56           ;then apply precomp setting from keyboard link 4
@@ -1031,7 +1040,11 @@ ENDIF
 
 .LBD22                          ;Select side 2 (top side) of drive
         LDA     L0D5E
+IF latch0 AND latch2
+        AND     #latch2 EOR $FF
+ELSE
         ORA     #latch2
+ENDIF
         STA     L0D5E
         RTS
 
@@ -1245,7 +1258,7 @@ ELSE
 ENDIF
 
         LDA     #$A0            ;$A0 = write sector
-IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793
+IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793 OR PLATFORM = PLAT_U2793
 ;On WD 279X bit 1 is the Side Compare flag, do not set
 ELSE
         ORA     L0D56           ;apply precomp setting from keyboard link 4
@@ -1386,7 +1399,11 @@ ENDIF
 
         LDA     L0D5E
         AND     #latch2
+IF latch0 AND latch2
+        BNE     LBEBC
+ELSE
         BEQ     LBEBC
+ENDIF
 
         LDX     #$00
 IF PLATFORM = PLAT_BBC OR PLATFORM = PLAT_MASTER
@@ -1400,7 +1417,7 @@ ENDIF
         STA     L00A3
         JSR     LBD22
 
-IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793
+IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793 OR PLATFORM = PLAT_U2793
         JSR     reslat
 ELSE
         LDA     L0D5E
@@ -1491,7 +1508,7 @@ ENDIF
         ROL     L10E4
         JSR     LBF55
 
-IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793
+IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793 OR PLATFORM = PLAT_U2793
         JSR     reslat
 ELSE
         LDA     L0D5E
@@ -1704,7 +1721,7 @@ ENDIF
 
 IF PLATFORM = PLAT_BBC OR PLATFORM = PLAT_MASTER
 ELSE
-IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793
+IF PLATFORM = PLAT_O2791 OR PLATFORM = PLAT_O2793 OR PLATFORM = PLAT_U2793
 ;Opus 2791/2793 boards do not have a reset latch and execute command $03
 ;(Restore, 30 ms stepping, unload head) on Break.  Send Force Interrupt
 ;to cancel the command and let the next Restore or Seek load the head.

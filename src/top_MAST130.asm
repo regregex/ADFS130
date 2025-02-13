@@ -1,7 +1,10 @@
 ; Define platforms
-PLAT_ELK                 = 1
-PLAT_BBC                 = 2
-PLAT_MASTER              = 3
+PLAT_ELK                 = 1       ; Acorn Electron (separate FDC driver source file)
+PLAT_BBC                 = 2       ; i8271 (rejected) or Acorn B/B+ WD 1770 controller
+PLAT_MASTER              = 3       ; Master WD 1770 controller
+PLAT_O2791               = 4       ; Opus WD 2791 controller
+PLAT_O2793               = 5       ; Opus WD 2793 controller
+PLAT_U2793               = 6       ; UDM/Microware WD 2793 controller
 PLATFORM                 = PLAT_MASTER
 
 ; Optional ADFS patches

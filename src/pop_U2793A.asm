@@ -9,7 +9,7 @@ PLAT_O1770               = 7       ; Opus WD 1770 controller
 PLAT_CHALL               = 8       ; Opus Challenger 3-in-1 unit
 PLAT_W1770               = 9       ; Watford WD 1770 controller
 PLAT_S1770               = 10      ; Solidisk WD 1770 controller
-PLATFORM                 = PLAT_CHALL
+PLATFORM                 = PLAT_U2793
 
 ; Optional ADFS patches
 PATCH_IDE                = TRUE    ; replace SCSI drivers with IDE
