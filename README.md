@@ -91,14 +91,17 @@ __src/top_MAST130.asm__
 This distribution supports the following third-party floppy drive
 controllers, all on the Model B:
 
-| Filename | Controller        | Tested on    | Included in adfs.ssd |
-|----------|-------------------|--------------|----------------------|
-| O2791A   | Opus 2791         | hardware     | no                   |
-| O2793A   | Opus 2793         | &ndash;      | no                   |
-| O1770A   | Opus 1770         | b2, BeebEm   | yes                  |
-| CHALLA   | Opus Challenger 3 | hardware, b2 | yes                  |
-| W1770A   | Watford 1770      | BeebEm       | yes                  |
-| S1770A   | Solidisk 1770     | &ndash;      | yes                  |
+| Filename | Controller         | Tested on    | Included in adfs.ssd |
+|----------|--------------------|--------------|----------------------|
+| O2791A   | Opus 2791          | hardware     | no                   |
+| O2793A   | Opus 2793          | MAME         | no                   |
+| U2793A   | UDM/Microware 2793 | MAME         | no                   |
+| O1770A   | Opus 1770          | b2, BeebEm   | yes                  |
+| CHALLA   | Opus Challenger 3  | hardware, b2 | yes                  |
+| W1770A   | Watford 1770       | BeebEm       | yes                  |
+| S1770A   | Solidisk 1770      | MAME         | yes                  |
+
+_Sincere thanks to the authors of the b2, BeebEm and MAME emulators._
 
 All ROMs are titled Acorn ADFS 1.39.  
 Use ADFS 1.30 with later issues of the Watford and Solidisk controllers,
