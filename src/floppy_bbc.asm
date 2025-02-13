@@ -53,7 +53,7 @@ latch       =       sheila+$0084        ;floppy drive interface control latch
 ELIF PLATFORM = PLAT_U2793
 sense       =       $00                 ;sense of FDC data bus pins (WD 2791 = $FF, else $00)
 stsens      =       $00                 ;sense of FDC status register compared to WD 2793
-hdload      =       $00                 ;sense of Type I command bit 3; $00=spin up $08=load head
+hdload      =       $08                 ;sense of Type I command bit 3; $00=spin up $08=load head
 latch0      =       $1A                 ;latch value to select drive 0, single density
 latch1      =       $01                 ;latch XOR mask to select drive 1 (unit 1 side 0)
 latch2      =       $02                 ;latch XOR mask to select drive 2 (unit 0 side 1)
@@ -98,7 +98,7 @@ latchd      =       $01                 ;latch XOR mask to select double density
 latchr      =       $00                 ;latch value to reset FDC
 fdc         =       sheila+$0084        ;base of floppy drive controller registers
 latch       =       sheila+$0080        ;floppy drive interface control latch
-ELSE           ;PLAT_S1770
+ELSE          ; PLAT_S1770
 sense       =       $00                 ;sense of FDC data bus pins (WD 2791 = $FF, else $00)
 stsens      =       $80                 ;sense of FDC status register compared to WD 2793
 hdload      =       $00                 ;sense of Type I command bit 3; $00=spin up $08=load head
@@ -352,7 +352,7 @@ IF PLATFORM = PLAT_BBC OR PLATFORM = PLAT_MASTER
         CMP     L00A3           ;if target track = current track
         BEQ     LBAF4           ;then no seeking to do, finish
 ELSE
-;Opus 2791/2793 boards need a Drive Ready signal to accept Type II/III
+;WD 279X boards need a Drive Ready signal to accept Type II/III
 ;commands.  Always do a seek to wake up the drive.
 ;NB The extra ID read hits performance on other boards, but as we wait
 ;for Drive Ready on all of them now, we're stuck with it.
@@ -811,7 +811,8 @@ IF PLATFORM = PLAT_BBC OR PLATFORM = PLAT_MASTER
         BVC     LBC9E
 ELSE
         ASL     L00A7   ;if we don't have the token
-        BEQ     LBC9E   ;then transfer is finished
+        BEQ     LBC9E   ;then mark the transfer finished
+                        ;(the other thread may clear the flag again)
 ENDIF
 
         LDA     L00F4   ;else save current ROM (= ADFS)
@@ -906,7 +907,8 @@ ENDIF
         BIT     L00FF
         BPL     busy1
 
-;The third-party controllers supported here do not have a reset latch.
+;UDM WD 2793 has a reset latch but we reuse the Opus code.  Otherwise,
+;the third-party controllers supported here do not have a reset latch.
 ;Send Force Interrupt instead and do not disable the drive (such that
 ;the controller is in the idle spin state with the motor stopped) or
 ;change the latches (such that a drive activity LED suddenly lights
@@ -1438,8 +1440,8 @@ ENDIF
         LDA     #$10
         STA     L0D5A
 .LBEDF
-        LDA     #$FE            ;current sector = -2??
-        STA     L00A4           ;(-1 gets written to sector register!)
+        LDA     #$FE            ;current sector = -2
+        STA     L00A4           ;(-1 gets written to sector register)
         LDX     #$00
         BEQ     LBEF2
 
@@ -1707,7 +1709,7 @@ ENDIF
 .LBFE0
         JSR     L8043           ;release Tube if claimed
 
-        LDX     L00B0           ;restore X=LBB control block address
+        LDX     L00B0           ;restore X=LSB control block address
         LDA     L10E3           ;get command result
         BEQ     LBFF1           ;if no error then return A=0??
 
