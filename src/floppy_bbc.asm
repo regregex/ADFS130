@@ -720,9 +720,10 @@ ELSE
         LDA     #$10
         BIT     L00A1           ;N=read from disc Z=read/write to I/O proc.
         BEQ     LBC21
-
-;       BMI     LBC46
-;       LDY     #wrtue-LBCED-$01        ;same value
+IF FALSE                        ;IF (wrtue-LBCED) <> (rdtue-LBCF5)
+        BMI     LBC46
+        LDY     #wrtue-LBCED-$01
+ENDIF
 .LBC46
         LDA     LBCF5,Y
         BIT     L00A1
@@ -815,7 +816,7 @@ ELSE
                         ;(the other thread may clear the flag again)
 ENDIF
 
-        LDA     L00F4   ;else save current ROM (= ADFS)
+        LDA     L00F4   ;else save current ROM (ADFS or Svc 5 respondent)
         PHA
 .rdior
         LDA     #$00    ;page in ADFS ROM
@@ -827,7 +828,7 @@ ENDIF
 
         PLA             ;restore X
         TAX
-        PLA             ;restore previous ROM (= ADFS)
+        PLA             ;restore previous ROM
         STA     L00F4
         STA     LFE30
         PLA

@@ -1457,7 +1457,7 @@ ENDIF
 
         LDX     L00B2
         PLP
-        JMP     L856B
+        JMP     L856B           ;can save 3; join?
 
 .L851F
         INX
@@ -1546,8 +1546,8 @@ ENDIF
         CMP     L1034,Y
         BEQ     L85A1
 
-        PLP
-        JMP     L85C1
+        PLP                     ;can save 1; BNE/PLP
+        JMP     L85C1           ;(possibly 2 more; join?)
 
 .L85A1
         INX
@@ -3847,26 +3847,31 @@ ENDIF
 
         JMP     L89D0
 
-.L923E
+.L923E                          ;OSFILE
         STX     L00B8
         STY     L00B9
         TAY
         LDX     #$00
         STX     L10D5
+IF PATCH_UNSUPPORTED_OSFILE
+        INY                     ;1 byte shorter
+        CPY     #$09            ;and do not serve calls $7F..$87
+        BCS     L9268           ;if unrecognised preserve A, return differently trashed XY
+        TYA
+        ASL     A
+        TAX
+        DEY
+        PAD     1
+ELSE
         ASL     A
         TAX
         INX
         INX
-IF PATCH_UNSUPPORTED_OSFILE
-        TYA     ;; Unsupported OSFILE should return with A preserved
-                ;; This patch works because the BMI branch below is superfluous
-        PAD     1
-ELSE
         BMI     L9268
-ENDIF
 
         CPX     #$12
         BCS     L9268
+ENDIF
 
         LDA     L9269+1,X
         PHA
@@ -4136,6 +4141,25 @@ ENDIF
         STA     L00B7
         RTS
 
+IF PRESERVE_PADDING
+ELSE
+.option_string_table
+.L9423
+        EQUS    "Off "
+.L9427
+        EQUS    "Load"
+.L942B
+        EQUS    "Run "
+.L942F
+        EQUS    "Exec"
+
+.option_string_table_end
+
+IF HI(option_string_table) != HI(option_string_table_end)
+       ERROR "option_string_table must not straddle a page boundary"
+ENDIF
+ENDIF
+
 .L93CE
         JSR     LA4CF
 
@@ -4198,6 +4222,8 @@ ENDIF
 .L941F
         EQUB    <L9423,<L9427,<L942B,<L942F
 
+IF PRESERVE_PADDING
+.option_string_table
 .L9423
         EQUS    "Off "
 .L9427
@@ -4206,6 +4232,13 @@ ENDIF
         EQUS    "Run "
 .L942F
         EQUS    "Exec"
+
+.option_string_table_end
+
+IF HI(option_string_table) != HI(option_string_table_end)
+       ERROR "option_string_table must not straddle a page boundary"
+ENDIF
+ENDIF
 
 .L9433
         JSR     L9471
@@ -5472,7 +5505,7 @@ ENDIF
         BNE     L9B22
 
         ROR     L00CD
-        CLC
+        CLC                     ;can save 1; ASL
         ROL     L00CD
         JSR     LA93C
 
@@ -5786,19 +5819,19 @@ ENDIF
         EQUW $FF2D
 
 ;; Extended Vector Table
-.L9CC1  EQUW L923E
+.L9CC1  EQUW L923E              ;E FILEV
         EQUB $FF
-        EQUW LA955
+        EQUW LA955              ;E ARGSV
         EQUB $FF
-        EQUW LAD63
+        EQUW LAD63              ;E BGETV
         EQUB $FF
-        EQUW LB08F
+        EQUW LB08F              ;E BPUTV
         EQUB $FF
-        EQUW LB57F
+        EQUW LB57F              ;E GBPBV
         EQUB $FF
-        EQUW LB1B6
+        EQUW LB1B6              ;E FINDV
         EQUB $FF
-        EQUW L9E50
+        EQUW L9E50              ;E FSCV
         EQUB $FF
 
 .L9CD6
@@ -5857,7 +5890,7 @@ ENDIF
         LDX     L00F4
         RTS
 
-.L9D19
+.L9D19                          ;Service call $08 = unrecognised OSWORD
         TYA
         PHA
         LDA     #$00
@@ -6100,7 +6133,7 @@ ENDIF
         EQUB <L9FC3
         EQUB <L9FD0
 
-.L9E50
+.L9E50                          ;FSC
         STX     L00B4
         STY     L00B5
         TAX
@@ -7656,8 +7689,8 @@ ENDIF
         STA     L00BA
         RTS
 
-.LA71A
-        JSR     LA70E
+.LA71A                          ;Checksum private page
+        JSR     LA70E           ;set up pointer to private page
 
         LDY     #$FD
         TYA
@@ -8026,7 +8059,7 @@ ENDIF
         LDY     #$FF
         TYA
         INY
-.LA955
+.LA955                          ;OSARGS
         CPY     #$00
         BNE     LA995
 
@@ -8458,7 +8491,7 @@ ELSE
         LDA     #$00
         STA     LFC43
         ROR     L00CD
-        CLC
+        CLC                     ;can save 1; ASL
         ROL     L00CD
         LDA     LFC40
         JSR     L830F
@@ -8530,7 +8563,7 @@ ENDIF
         AND     #$E0
         ORA     L00CF
         PHP
-        CLC
+        CLC                     ;can save 1; ASL
         ROL     A
         STA     L1004,X
         PLP
@@ -8573,7 +8606,7 @@ ENDIF
 
         BCC     LAC5F
 
-        CLC
+        CLC                     ;can save 1; ASL
         ROL     A
         STA     L1004,X
         JSR     LACF5
@@ -8772,7 +8805,7 @@ ENDIF
         EQUS    "EOF"
         EQUB    $00
 
-.LAD63
+.LAD63                          ;OSBGET
         STX     L00C3
         JSR     LACFE
 
@@ -9206,7 +9239,7 @@ ENDIF
 
         RTS
 
-.LB08F
+.LB08F                          ;OSBPUT
         STX     L00C3
         PHA
         JSR     LACFE
@@ -9370,7 +9403,7 @@ ENDIF
 .LB1B3
         LDA     #$00
         TAY
-.LB1B6
+.LB1B6                          ;OSFIND
         JSR     LA749
 
         STX     L1040
@@ -9943,7 +9976,7 @@ ENDIF
         TAX
         RTS
 
-.LB57F
+.LB57F                          ;OSGBPB
         JSR     LA749
 
         STA     L10B4
