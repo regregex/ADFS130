@@ -27,7 +27,7 @@ __src/top_ADFS133.asm__
 * excludes the TUBE DELAY patch
 * doesn't preserve padding, so code is squished up and dead code removed
 * contains HELP message: Acorn ADFS 1.33.005 (with my build number)
-* md5sum = 5a2d9bdd3f9e22171d7fe430bc34137a (will change)
+* md5sum = b4689ca3ce0e4f498b5755a0acabb415 (will change)
 * currently 151 bytes free
 
 __src/top_DC133.asm__
@@ -56,7 +56,7 @@ __src/top_ELK103.asm__
 * excludes the TUBE DELAY patch
 * doesn't preserve padding, so code is squished up and dead code removed
 * contains HELP message: Electron ADFS 1.03.005 (with my build number)
-* md5sum = 4570f38426640f8bb6434c52775c8b23 (will change)
+* md5sum = 2c376ce62391118f23135b0925b39340 (will change)
 * currently 7 bytes free
 
 __src/top_ELK130E.asm__
@@ -65,7 +65,7 @@ __src/top_ELK130E.asm__
 * based on the above ELK100 build with the following changes:
 * the version string is Acorn ADFS 1.30E
 * patches \*COMPACT to hide the cursor when run and re-enable it afterwards to avoid disk corruption
-* md5sum = 2441643d5121f8441298acf444bfe69f (will change)
+* md5sum = e42ca60fd0949a23800e8fa66bf441a6 (will change)
 * currently 7 bytes free
 
 __src/top_JGH133.asm__
@@ -75,7 +75,7 @@ __src/top_JGH133.asm__
 * identical to the version here: http://mdfs.net/Info/Comp/BBC/IDE/ADFS/ADFS133
 * preserves all padding and dead code
 * contains HELP message: Acorn ADFS 1.33r23
-* md5sum = 2be42f51899aded44607c5167d72e34d (will change)
+* md5sum = aab586a76794b9d5a32f3e2aa5bc8121 (will change)
 * 0 bytes free
 
 __src/top_MAST130.asm__
@@ -116,10 +116,10 @@ Building ADFS130...
     mdsum is 831ee90ac5d49ba5507252faf0c12536 -
 Building ADFS133...
     code ends at &BF69  ( 151 bytes free )
-    mdsum is 5a2d9bdd3f9e22171d7fe430bc34137a -
+    mdsum is b4689ca3ce0e4f498b5755a0acabb415 -
 Building CHALLA...
-    code ends at &BF4C  ( 180 bytes free )
-    mdsum is aa9a01cdc0d4b85c810d435e3d8bb99a -
+    code ends at &BF46  ( 186 bytes free )
+    mdsum is 21debe756ffcf8f50dea7a641ad91c81 -
 Building DC133...
     code ends at &C000  ( 0 bytes free )
     mdsum is c7714bd93602fdc11d2cdaab4af03b07 -
@@ -128,25 +128,25 @@ Building ELK100...
     mdsum is 883ab9513765f25d16277fce4a4581bc -
 Building ELK103...
     code ends at &BFF9  ( 7 bytes free )
-    mdsum is 4570f38426640f8bb6434c52775c8b23 -
+    mdsum is 2c376ce62391118f23135b0925b39340 -
 Building ELK130E...
     code ends at &BFF9  ( 7 bytes free )
-    mdsum is 2441643d5121f8441298acf444bfe69f -
+    mdsum is e42ca60fd0949a23800e8fa66bf441a6 -
 Building JGH133...
     code ends at &C000  ( 0 bytes free )
-    mdsum is 2be42f51899aded44607c5167d72e34d -
+    mdsum is aab586a76794b9d5a32f3e2aa5bc8121 -
 Building MAST130...
     code ends at &C000  ( 0 bytes free )
     mdsum is a9014b75fc0e1efbbe89acb20c4a75b8 -
 Building O1770A...
-    code ends at &BF47  ( 185 bytes free )
-    mdsum is 31b35815c1cbf33eb9eca37ad3aa010e -
+    code ends at &BF41  ( 191 bytes free )
+    mdsum is a7b38606d40f0e629c862bcb7f927acb -
 Building S1770A...
-    code ends at &BF47  ( 185 bytes free )
-    mdsum is d88cbb73d5ff7571a16c6fe4c4f18f9c -
+    code ends at &BF41  ( 191 bytes free )
+    mdsum is 76c5cf5d05c209042e4eb8dae672b85b -
 Building W1770A...
-    code ends at &BF4C  ( 180 bytes free )
-    mdsum is fc5cfea43a68b00d8e14531539e5226c -
+    code ends at &BF46  ( 186 bytes free )
+    mdsum is 6f7f691b17592bfc2ff2445904398302 -
 
 Disk title:  (1)  Disk size: &320 - 200K
 Boot Option: 0 (None)   File count: 12
